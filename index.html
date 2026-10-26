@@ -44,14 +44,22 @@ a#web{color:#2a7fff}
   document.getElementById("msg").textContent = "Открываю заказ в приложении Профи…";
   document.getElementById("links").style.display = "block";
   var left = false;
+  var toWeb = false;
   var timer = null;
+  // уходим на сайт сами: скрытие страницы — это переход, а не открытие приложения, закрывать окно нельзя
+  function goWeb() {
+    toWeb = true;
+    location.replace(web);
+  }
+  document.getElementById("web").addEventListener("click", function () { toWeb = true; });
   // приложение открылось: вкладка больше не нужна (Safari не даст закрыть чужую вкладку, браузер Telegram — может)
   function done() {
-    document.getElementById("msg").textContent = "Заказ открыт в приложении. Эту страницу можно закрыть.";
+    document.getElementById("msg").textContent = "Если заказ открылся в приложении, эту страницу можно закрыть.";
     document.getElementById("app").textContent = "Открыть заказ ещё раз";
     try { window.close(); } catch (e) {}
   }
   function gone() {
+    if (toWeb) { return; }
     left = true;
     if (timer) { clearTimeout(timer); timer = null; }
     done();
@@ -62,7 +70,7 @@ a#web{color:#2a7fff}
   window.addEventListener("pagehide", gone);
   window.addEventListener("pageshow", function (e) { if (e.persisted && left) { done(); } });
   timer = setTimeout(function () {
-    if (!left) { location.replace(web); }
+    if (!left) { goWeb(); }
   }, FALLBACK_MS);
   location.href = app;
 })();
