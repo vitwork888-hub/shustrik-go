@@ -10,12 +10,15 @@
 body{font-family:-apple-system,system-ui,sans-serif;text-align:center;padding:48px 20px;color:#222}
 a#app{display:block;margin:24px auto 12px;padding:18px;max-width:320px;border-radius:12px;background:#2a7fff;color:#fff;font-size:18px;text-decoration:none}
 a#web{color:#2a7fff}
+#links{display:none}
 </style>
 </head>
 <body>
-<p id="msg">Открываю заказ в приложении Профи…</p>
+<p id="msg">Открываю заказ…</p>
+<div id="links">
 <a id="app" href="#">Открыть в приложении</a>
 <a id="web" href="#">Открыть на сайте Профи</a>
+</div>
 <script>
 (function () {
   var APP_TEMPLATE = "backoffice-react-app://&sub1=order&sub2={id}";
@@ -32,10 +35,14 @@ a#web{color:#2a7fff}
   var ua = navigator.userAgent;
   // приложение исполнителя пробуем только на телефонах; ПК (и iPad, который выдаёт себя за Mac) — сразу на сайт
   var mobile = /iPhone|iPod|Android/i.test(ua);
+  // пока грузится Профи, браузер держит эту страницу — без кнопок, чтобы не было «выбора»
   if (!mobile) {
+    document.getElementById("msg").textContent = "Открываю заказ на сайте Профи…";
     location.replace(web);
     return;
   }
+  document.getElementById("msg").textContent = "Открываю заказ в приложении Профи…";
+  document.getElementById("links").style.display = "block";
   var left = false;
   var timer = null;
   // приложение открылось: вкладка больше не нужна (Safari не даст закрыть чужую вкладку, браузер Telegram — может)
