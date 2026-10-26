@@ -29,14 +29,30 @@ a#web{color:#2a7fff}
   var app = APP_TEMPLATE.replace("{id}", id);
   document.getElementById("app").href = app;
   document.getElementById("web").href = web;
+  var ua = navigator.userAgent;
+  var mobile = /iPhone|iPad|iPod|Android/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (!mobile) {
+    location.replace(web);
+    return;
+  }
   var left = false;
   var timer = null;
+  // приложение открылось: вкладка больше не нужна (Safari не даст закрыть чужую вкладку, браузер Telegram — может)
+  function done() {
+    document.getElementById("msg").textContent = "Заказ открыт в приложении. Эту страницу можно закрыть.";
+    document.getElementById("app").textContent = "Открыть заказ ещё раз";
+    try { window.close(); } catch (e) {}
+  }
   function gone() {
     left = true;
     if (timer) { clearTimeout(timer); timer = null; }
+    done();
   }
-  document.addEventListener("visibilitychange", function () { if (document.hidden) { gone(); } });
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) { gone(); } else if (left) { done(); }
+  });
   window.addEventListener("pagehide", gone);
+  window.addEventListener("pageshow", function (e) { if (e.persisted && left) { done(); } });
   timer = setTimeout(function () {
     if (!left) { location.replace(web); }
   }, FALLBACK_MS);
