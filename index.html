@@ -30,7 +30,8 @@ a#web{color:#2a7fff}
   document.getElementById("app").href = app;
   document.getElementById("web").href = web;
   var ua = navigator.userAgent;
-  var mobile = /iPhone|iPad|iPod|Android/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  // приложение исполнителя пробуем только на телефонах; ПК (и iPad, который выдаёт себя за Mac) — сразу на сайт
+  var mobile = /iPhone|iPod|Android/i.test(ua);
   if (!mobile) {
     location.replace(web);
     return;
