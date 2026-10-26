@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Открываю заказ…</title>
+<style>
+body{font-family:-apple-system,system-ui,sans-serif;text-align:center;padding:48px 20px;color:#222}
+a#app{display:block;margin:24px auto 12px;padding:18px;max-width:320px;border-radius:12px;background:#2a7fff;color:#fff;font-size:18px;text-decoration:none}
+a#web{color:#2a7fff}
+</style>
+</head>
+<body>
+<p id="msg">Открываю заказ в приложении Профи…</p>
+<a id="app" href="#">Открыть в приложении</a>
+<a id="web" href="#">Открыть на сайте Профи</a>
+<script>
+(function () {
+  var APP_TEMPLATE = "backoffice-react-app://&sub1=order&sub2={id}";
+  var FALLBACK_MS = 1200;
+  var id = new URLSearchParams(location.search).get("id");
+  if (!id || !/^\d{1,18}$/.test(id)) {
+    document.body.textContent = "Неверная ссылка";
+    return;
+  }
+  var web = "https://profi.ru/backoffice/n.php?o=" + id;
+  var app = APP_TEMPLATE.replace("{id}", id);
+  document.getElementById("app").href = app;
+  document.getElementById("web").href = web;
+  var left = false;
+  var timer = null;
+  function gone() {
+    left = true;
+    if (timer) { clearTimeout(timer); timer = null; }
+  }
+  document.addEventListener("visibilitychange", function () { if (document.hidden) { gone(); } });
+  window.addEventListener("pagehide", gone);
+  timer = setTimeout(function () {
+    if (!left) { location.replace(web); }
+  }, FALLBACK_MS);
+  location.href = app;
+})();
+</script>
+</body>
+</html>
